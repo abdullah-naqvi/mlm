@@ -1,0 +1,38 @@
+# main.py
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+import argparse
+
+def load_data(file_path):
+    """Load the dataset from a CSV file."""
+    data = pd.read_csv(file_path)
+    data_cleaned = data.drop(columns=['Name', 'Surname'])
+    X = data_cleaned.drop(columns=['Result'])
+    y = data_cleaned['Result']
+    return X, y
+
+def train_decision_tree(X, y):
+    """Train a Decision Tree model and evaluate its accuracy."""
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    model = DecisionTreeClassifier(random_state=42)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    return model, accuracy
+
+def main(file_path):
+    """Main function to run the program."""
+    print("Loading dataset...")
+    X, y = load_data(file_path)
+    print("Training Decision Tree model...")
+    model, accuracy = train_decision_tree(X, y)
+    print(f"Decision Tree Model Accuracy: {accuracy * 100:.2f}%")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Train a Decision Tree model using a dataset.")
+    parser.add_argument('file_path', type=str, help="Path to the CSV dataset file")
+    args = parser.parse_args()
+
+    main(args.file_path)
