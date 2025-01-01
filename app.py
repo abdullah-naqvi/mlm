@@ -1,9 +1,9 @@
-# main.py
+# app.py
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
-import argparse
+import streamlit as st
 
 def load_data(file_path):
     """Load the dataset from a CSV file."""
@@ -22,17 +22,23 @@ def train_decision_tree(X, y):
     accuracy = accuracy_score(y_test, y_pred)
     return model, accuracy
 
-def main(file_path):
-    """Main function to run the program."""
-    print("Loading dataset...")
-    X, y = load_data(file_path)
-    print("Training Decision Tree model...")
-    model, accuracy = train_decision_tree(X, y)
-    print(f"Decision Tree Model Accuracy: {accuracy * 100:.2f}%")
+def main():
+    """Streamlit app for Decision Tree model training and evaluation."""
+    st.title("Decision Tree Model Trainer")
+
+    uploaded_file = st.file_uploader("Upload your dataset (CSV format)", type="csv")
+
+    if uploaded_file is not None:
+        st.write("Dataset uploaded successfully!")
+        X, y = load_data(uploaded_file)
+        st.write("Preview of the dataset:")
+        st.dataframe(X.head())
+
+        if st.button("Train Decision Tree Model"):
+            with st.spinner("Training the model..."):
+                model, accuracy = train_decision_tree(X, y)
+            st.success("Model trained successfully!")
+            st.write(f"Model Accuracy: {accuracy * 100:.2f}%")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train a Decision Tree model using a dataset.")
-    parser.add_argument('file_path', type=str, help="Path to the CSV dataset file")
-    args = parser.parse_args()
-
-    main(args.file_path)
+    main()
